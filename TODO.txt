@@ -1,0 +1,22 @@
+TODO
+* misura Jsc statica da rifare
+* accettare o eliminare lettere accentate, caratteri speciali e spazi in user, experiment e device
+* evitare che il Voc sia assurdo: forzare maggiore del mpp?
+* tronca il testo di device prima di inviarlo al keithley come subtext, di modo da non sforare i 32 caratteri
+* in "misura lista" in "misurare il prossimo blocco" prova ad annunciare cosa sara il prossimo blocco
+* avvisare se la compliance e' stata passata tra i punti jsc e voc
+* riparare la misura della resistenza in serie quando viene raggiunta la compliance, segna sempre valori troppo piccoli
+* aggiungere una funzione stop per le liste (con il bottone stop che gia c'e)
+
+WISHLIST
+* py2exe
+* controllo shutter del simolatore solare e tempo di attesa prima di iniziare la misura
+* aggiungere controllo che siano stati acquisiti tutti i punti
+* lista selezionabile dei grafici da mostrare http://eli.thegreenplace.net/2009/05/23/more-pyqt-plotting-demos
+* avvisare se si sta uscendo con una misura non salvata
+* interfaccia "elastica" che si adatti a pieno schermo
+* bottoni measure Voc e Jsc che diano il comando di una misura continua e che il risultato si legga dallo schermo del Keithley
+
+TO BE TESTED
+* misura Voc negativi
+* a volte non fa lo scan fino a 0.7 V bensi a 0.69

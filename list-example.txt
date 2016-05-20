@@ -1,0 +1,3 @@
+KEEP_THIS_LINE-User	Experiment	StartV	EndV	StepV	Compliance	Scale-Index	IntegrationTime	DelayTime	CellArea	AutoScale	Irradiance	Dark	Device	Diode	Reverse	AutoSaveImages	WaitBeforeNext
+ilario	ig40	-0.1	0.3	0.01	0.005	3	2	0	0.09	0	100	0	c6	1	0	1	0
+ilario	ig40	-0.1	0.3	0.01	0.005	3	2	0	0.09	0	100	0	c6	1	1	1	0

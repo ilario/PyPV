@@ -1,0 +1,32 @@
+<!DOCTYPE XUPProject>
+<!--
+###########################################################################################
+##      Created using Monkey Studio IDE v1.9.0.4 (1.9.0.4)
+##
+##  Author    : Ilario Gelmetti <igelmetti@iciq.es>
+##  Project   : PyPV
+##  FileName  : PyPV-monkeystudio.xpyqt
+##  Date      : 2015-02-17T03:19:29
+##  License   : GPL
+##  Comment   : Creating using Monkey Studio RAD
+##  Home Page : http://www.mydomain.org
+##
+##  This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
+##  WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+##
+###########################################################################################
+-->
+<project version="0.1" name="PyPV">
+    <variable name="XUP.MAIN_FILE">
+        <value>PyPV.py</value>
+    </variable>
+    <variable name="PYTHON_FILES">
+        <file>VICurves.py</file>
+        <file>Keithley2400.py</file>
+        <file>mainwindow.py</file>
+        <file>PyPV.py</file>
+    </variable>
+    <variable name="FORMS">
+        <file>mainwindow.ui</file>
+    </variable>
+</project>
