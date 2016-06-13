@@ -16,7 +16,7 @@
 ##
 ###########################################################################################
 -->
-<project version="0.1" name="PyPV">
+<project version="1.1.0" name="PyPV">
     <variable name="XUP.MAIN_FILE">
         <value>PyPV.py</value>
     </variable>
