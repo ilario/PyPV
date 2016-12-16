@@ -89,6 +89,9 @@ class MainWindow ( QMainWindow ):
         self.connect(self.ui.autoSaveButton, SIGNAL('clicked()'), SLOT('clickAutoSave()'))
         self.connect(self.ui.runListButton, SIGNAL('clicked()'), SLOT('clickRunList()'))
         self.connect(self.ui.runAutoMeasureButton, SIGNAL('clicked()'), SLOT('clickAutoMeasure()'))
+        self.connect(self.ui.autoScale_check, SIGNAL('clicked()'), SLOT('clickAutoScale()'))
+        self.connect(self.ui.solSim_check, SIGNAL('clicked()'), SLOT('clickSolSim()'))
+        self.connect(self.ui.dark_check, SIGNAL('clicked()'), SLOT('clickDark()'))
         self.isTriggerOpen = False
         if not TEST_MODE:
             self.smu = Keithley2400.K2400()
@@ -105,7 +108,9 @@ class MainWindow ( QMainWindow ):
         self.currentImagePid=0
         self.terminateCurrentImage=0
         if os.path.isfile('last_configuration.lnk'):
-            conf = genfromtxt('last_configuration.lnk', dtype='str')
+            #conf = genfromtxt('last_configuration.lnk', dtype='str')
+            with open('last_configuration.lnk') as f:
+                conf = f.read().splitlines()
             extendedConf=0
             self.applyConf(conf, extendedConf)
 
@@ -307,15 +312,21 @@ class MainWindow ( QMainWindow ):
         self.terminateCurrentImage=1
         self.ui.LCD_Voc.setDigitCount(5)
 
-#        self.ui.reverse_check.setCheckState(0)
-#        maxVoltages = [0,0,0,0]
+        self.ui.reverse_check.setCheckState(0)
+        maxVoltages = [0,0,0,0]
 #        for i in 0,1,2,3:
 #            self.ui.diode_spin.setValue(int(i)+1)
 #            self.displayDiode()
 #            voltage = self.measure_V()
+#            if voltage < float(self.ui.startV_edit.text()):
+#                lowVocAnswer = QMessageBox.warning(self, "Voc lower than starting V", "The measured Voc is lower than the starting scan voltage. Check the cable connections or the lower voltage parameter. Do you want to perform anyway this measurement?", QMessageBox.Yes | QMessageBox.Cancel, QMessageBox.Cancel)
+#                if lowVocAnswer == QMessageBox.Cancel:
+#                    break
+                    #this doesnt break the next for
 #            approxVoltage = "%.1f" % (float(voltage))
-#            maxVoltages[i] = float(approxVoltage) + 0.2
+#            maxVoltages[i] = max(0,float(approxVoltage)) + 0.2
 #            self.ui.endV_edit.setText(str(maxVoltages[i]))
+#            QApplication.processEvents()
 #            self.clickMeasure_IV()
 #            self.clickAutoSave()
 #            QApplication.processEvents()
@@ -324,6 +335,7 @@ class MainWindow ( QMainWindow ):
 #        for i in 0,1,2,3:
 #            self.ui.diode_spin.setValue(int(i)+1)
 #            self.ui.endV_edit.setText(str(maxVoltages[i]))
+#            QApplication.processEvents()
 #            self.displayDiode()
 #            self.clickMeasure_IV()
 #            self.clickAutoSave()
@@ -338,16 +350,18 @@ class MainWindow ( QMainWindow ):
                 if lowVocAnswer == QMessageBox.Cancel:
                     break
             approxVoltage = "%.1f" % (float(voltage))
-            maxVoltage = float(approxVoltage) + 0.2
-            self.ui.endV_edit.setText(str(maxVoltage))
-            
+            maxVoltages[i] = max(0,float(approxVoltage)) + 0.2
+            self.ui.endV_edit.setText(str(maxVoltages[i]))
+
+            self.ui.reverse_check.setCheckState(0)
+            QApplication.processEvents()
+            self.clickMeasure_IV()
+            self.clickAutoSave()
+            QApplication.processEvents()
             self.ui.reverse_check.setCheckState(1)
             self.clickMeasure_IV()
             self.clickAutoSave()
-            
-            self.ui.reverse_check.setCheckState(0)
-            self.clickMeasure_IV()
-            self.clickAutoSave()
+            QApplication.processEvents()
 
         self.terminateCurrentImage=0
         self.smu.subtext("Measure completed")
@@ -443,7 +457,28 @@ class MainWindow ( QMainWindow ):
                 if self.ui.autoSaveImages_check.isChecked():
                     saveImage=1
                     self.makeImage(saveImage, directory)  
-    
+
+    @pyqtSlot()
+    def clickAutoScale(self): 
+        if self.ui.autoScale_check.isChecked():
+            self.ui.scale_combo.setEnabled(False)
+        else:
+            self.ui.scale_combo.setEnabled(True)
+
+    @pyqtSlot()
+    def clickSolSim(self): 
+        if self.ui.solSim_check.isChecked():
+            self.ui.preDelayTime_edit.setEnabled(True)
+        else:
+            self.ui.preDelayTime_edit.setEnabled(False)
+
+    @pyqtSlot()
+    def clickDark(self): 
+        if self.ui.dark_check.isChecked():
+            self.ui.irradiance_edit.setEnabled(False)
+        else:
+            self.ui.irradiance_edit.setEnabled(True)
+
     def save(self, fileName, user, experiment, device, diode, cellArea, irradiance):
         # this handles also saving of last_measurement.txt
         with open(fileName,'w') as f_handle:

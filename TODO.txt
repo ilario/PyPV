@@ -7,6 +7,7 @@ TODO
 * avvisare se la compliance e' stata passata tra i punti jsc e voc
 * riparare la misura della resistenza in serie quando viene raggiunta la compliance, segna sempre valori troppo piccoli
 * aggiungere una funzione stop per le liste (con il bottone stop che gia c'e)
+* aggiungere Voc statico misurato da automeasure nell'header
 
 WISHLIST
 * py2exe
