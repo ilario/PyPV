@@ -16,6 +16,7 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+
 TEST_MODE = 0
 
 print("Checking if Keithley is connected...")
@@ -30,6 +31,7 @@ from numpy import *
 import datetime
 from multiprocessing import Process
 import os
+import unicodedata
 if not TEST_MODE:
     import Keithley2400
 
@@ -142,7 +144,12 @@ class MainWindow ( QMainWindow ):
 
     def __del__ ( self ):
         print("Saving conf...")
-        closingConf =  self.ui.user_edit.text(), self.ui.experiment_edit.text(), self.ui.startV_edit.text(), self.ui.endV_edit.text(), self.ui.stepV_edit.text(), self.ui.compliance_edit.text(), str(self.ui.scale_combo.currentIndex()), self.ui.integrationTime_edit.text(), self.ui.delayTime_edit.text(), self.ui.cellArea_edit.text()
+        try:
+            user, experiment, device, diode, cellArea, irradiance, dark = self.getDeviceIdentification()
+        except:
+            user="guest"
+            experiment="exp1"
+        closingConf =  user, experiment, self.ui.startV_edit.text(), self.ui.endV_edit.text(), self.ui.stepV_edit.text(), self.ui.compliance_edit.text(), str(self.ui.scale_combo.currentIndex()), self.ui.integrationTime_edit.text(), self.ui.delayTime_edit.text(), self.ui.cellArea_edit.text()
         
         with open('last_configuration.lnk','w') as f_handle:
             savetxt(f_handle, closingConf, fmt='%s')
@@ -368,8 +375,7 @@ class MainWindow ( QMainWindow ):
 
     def displayDiode(self):
         QApplication.processEvents()
-        device = str(self.ui.device_edit.text())
-        diode = str(int(self.ui.diode_spin.value()))
+        user, experiment, device, diode, cellArea, irradiance, dark = self.getDeviceIdentification()
         
         self.smu.reset()
         self.smu.removetext()
@@ -479,12 +485,27 @@ class MainWindow ( QMainWindow ):
         else:
             self.ui.irradiance_edit.setEnabled(True)
 
+    def checkFileName(self, fileName):
+        # https://stackoverflow.com/questions/9532499/check-whether-a-path-is-valid-in-python-without-creating-a-file-at-the-paths-ta
+        if not os.access(fileName, os.W_OK):
+            fileNameOk = False
+            try:
+                open(fileName, 'w').close()
+                os.unlink(fileName)
+                fileNameOk = True
+            except IOError:
+                QMessageBox.warning(self, "Error while saving file", "Can't save the required file:\n" + fileName + "\nEliminate the special characters in the User, Experiment and Device fields.", QMessageBox.Ok, QMessageBox.Ok)
+        else:
+            fileNameOk = True
+        return fileNameOk
+
     def save(self, fileName, user, experiment, device, diode, cellArea, irradiance):
         # this handles also saving of last_measurement.txt
-        with open(fileName,'w') as f_handle:
-            savetxt(f_handle, self.makeHeader(user, experiment, device, diode, cellArea, irradiance), fmt='%s')
-        with open(fileName,'a') as f_handle:
-            savetxt(f_handle, self.data3, fmt='%g \t%g')
+        if self.checkFileName(fileName):
+            with open(fileName,'w') as f_handle:
+                savetxt(f_handle, self.makeHeader(user, experiment, device, diode, cellArea, irradiance), fmt='%s')
+            with open(fileName,'a') as f_handle:
+                savetxt(f_handle, self.data3, fmt='%g \t%g')
 
     def makeImage(self, saveImage, directory):
         user, experiment, device, diode, cellArea, irradiance, dark = self.getDeviceIdentification()
@@ -513,15 +534,15 @@ class MainWindow ( QMainWindow ):
         
     def getDeviceIdentification(self):
         try:
-            user = str(self.ui.user_edit.text())
-            experiment = str(self.ui.experiment_edit.text())
-            device = str(self.ui.device_edit.text())
+            user = unicodedata.normalize('NFD', unicode(self.ui.user_edit.text())).encode('ascii', 'ignore')
+            experiment = unicodedata.normalize('NFD', unicode(self.ui.experiment_edit.text())).encode('ascii', 'ignore')
+            device = unicodedata.normalize('NFD', unicode(self.ui.device_edit.text())).encode('ascii', 'ignore')
             diode = str(int(self.ui.diode_spin.value()))
-            cellArea = str(self.cellArea)
-            irradiance = str(self.irradiance)
+            cellArea = str(self.ui.cellArea_edit.text())
+            irradiance = str(self.ui.irradiance_edit.text())
             dark = self.ui.dark_check.isChecked()
         except:
-            print "Fill user, experiment, device, diode, cellArea and irradiance data fields"
+            QMessageBox.warning(self, "Error reading parameters", "Please check the user, experiment, device, diode, cellArea and irradiance data fields", QMessageBox.Ok, QMessageBox.Ok)
         return user, experiment, device, diode, cellArea, irradiance, dark
 
     def getDarkData(self, irradiance, cellArea, compliance):
@@ -574,14 +595,15 @@ class MainWindow ( QMainWindow ):
     def fillMeasurementsFile(self, directory, experiment, device, diode):
         measurementsFileName = "iv_measurements-" + str(experiment) + "-" + str(self.date) + ".txt"
         measurementsFileNameWithDirectory = os.path.join(directory, measurementsFileName)
-        if not os.path.exists(measurementsFileNameWithDirectory):
-            measurementsFileHeader = "exp	device	diode	rev/fwd	Jsc	Voc	FF	efficiency	intTime	delay	irradiance", ""
-            with open(measurementsFileNameWithDirectory,'w') as f_handle:
-                savetxt(f_handle, measurementsFileHeader, fmt='%s')
-        if os.path.isfile(measurementsFileNameWithDirectory):
-            measurementsFileContent = str(experiment) + "	" + str(device) + "	" + str(diode) + "	" + str(self.reverseText) + "	" + str(self.jscDensity) + "	" + str(self.voc) + "	" + str(self.ff) + "	" + str(self.efficiency) + "	" + str(self.integrationTime) + "	" + str(self.delayTime) + "	" + str(self.irradiance), ""
-            with open(measurementsFileNameWithDirectory,'a') as f_handle:
-                savetxt(f_handle, measurementsFileContent, fmt='%s')
+        if self.checkFileName(measurementsFileNameWithDirectory):
+            if not os.path.exists(measurementsFileNameWithDirectory):
+                measurementsFileHeader = "exp	device	diode	rev/fwd	Jsc	Voc	FF	efficiency	intTime	delay	irradiance", ""
+                with open(measurementsFileNameWithDirectory,'w') as f_handle:
+                    savetxt(f_handle, measurementsFileHeader, fmt='%s')
+            if os.path.isfile(measurementsFileNameWithDirectory):
+                measurementsFileContent = str(experiment) + "	" + str(device) + "	" + str(diode) + "	" + str(self.reverseText) + "	" + str(self.jscDensity) + "	" + str(self.voc) + "	" + str(self.ff) + "	" + str(self.efficiency) + "	" + str(self.integrationTime) + "	" + str(self.delayTime) + "	" + str(self.irradiance), ""
+                with open(measurementsFileNameWithDirectory,'a') as f_handle:
+                    savetxt(f_handle, measurementsFileContent, fmt='%s')
 
     def fillLogFile(self, user, experiment, device, diode):
         logContent = str(user) + "	" + str(experiment) + "	" + str(device) + "	" + str(diode) + "	" + str(self.reverseText) + "	" + str(self.jscDensity) + "	" + str(self.voc) + "	" + str(self.ff) + "	" + str(self.efficiency) + "	" + str(self.integrationTime) + "	" + str(self.delayTime) + "	" + str(self.irradiance), ""
