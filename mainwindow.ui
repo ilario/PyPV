@@ -1762,22 +1762,6 @@
      </property>
     </item>
    </widget>
-   <widget class="QCheckBox" name="dark_check">
-    <property name="enabled">
-     <bool>true</bool>
-    </property>
-    <property name="geometry">
-     <rect>
-      <x>40</x>
-      <y>470</y>
-      <width>51</width>
-      <height>19</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Dark</string>
-    </property>
-   </widget>
    <widget class="QCheckBox" name="autoSaveImages_check">
     <property name="geometry">
      <rect>

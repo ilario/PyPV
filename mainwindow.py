@@ -1,7 +1,7 @@
 # PyPV
 #
 # Copyright (C) 2015 Daniel Fernandez Pinto
-#               2015-2016 Ilario Gelmetti <iochesonome@gmail.com>
+#               2015-2017 Ilario Gelmetti <iochesonome@gmail.com>
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -57,7 +57,7 @@ def plot_graph(imageName, voltage, adjCurrent, voltageMaxPower, currentMaxPower,
     ax.axvline(0, color='k')
     
     ymin, ymax = plt.ylim()
-    ax.set_yticks(arange(-100, 100, 0.5), minor='True')
+    ax.set_yticks(arange(int(min(minimum(adjCurrent,-2))*2), int(max(maximum(adjCurrent,2))*2), 0.5), minor='True')
     ax.yaxis.grid(True, which='minor')
     ax.set_ylim( ymin, ymax )
     
@@ -93,7 +93,6 @@ class MainWindow ( QMainWindow ):
         self.connect(self.ui.runAutoMeasureButton, SIGNAL('clicked()'), SLOT('clickAutoMeasure()'))
         self.connect(self.ui.autoScale_check, SIGNAL('clicked()'), SLOT('clickAutoScale()'))
         self.connect(self.ui.solSim_check, SIGNAL('clicked()'), SLOT('clickSolSim()'))
-        self.connect(self.ui.dark_check, SIGNAL('clicked()'), SLOT('clickDark()'))
         self.isTriggerOpen = False
         if not TEST_MODE:
             self.smu = Keithley2400.K2400()
@@ -110,7 +109,6 @@ class MainWindow ( QMainWindow ):
         self.currentImagePid=0
         self.terminateCurrentImage=0
         if os.path.isfile('last_configuration.lnk'):
-            #conf = genfromtxt('last_configuration.lnk', dtype='str')
             with open('last_configuration.lnk') as f:
                 conf = f.read().splitlines()
             extendedConf=0
@@ -136,16 +134,15 @@ class MainWindow ( QMainWindow ):
         if extendedConf:
             self.ui.autoScale_check.setCheckState(int(conf[10]))
             self.ui.irradiance_edit.setText(str(conf[11]))
-            self.ui.dark_check.setCheckState(int(conf[12]))
-            self.ui.device_edit.setText(str(conf[13]))
-            self.ui.diode_spin.setValue(int(conf[14]))
-            self.ui.reverse_check.setCheckState(int(conf[15]))
-            self.ui.autoSaveImages_check.setCheckState(int(conf[16]))
+            self.ui.device_edit.setText(str(conf[12]))
+            self.ui.diode_spin.setValue(int(conf[13]))
+            self.ui.reverse_check.setCheckState(int(conf[14]))
+            self.ui.autoSaveImages_check.setCheckState(int(conf[15]))
 
     def __del__ ( self ):
         print("Saving conf...")
         try:
-            user, experiment, device, diode, cellArea, irradiance, dark = self.getDeviceIdentification()
+            user, experiment, device, diode, cellArea, irradiance = self.getDeviceIdentification()
         except:
             user="guest"
             experiment="exp1"
@@ -185,7 +182,21 @@ class MainWindow ( QMainWindow ):
             if unsavedAnswer == QMessageBox.Yes:
                 self.unsavedData = False
         
-        if not self.unsavedData == True:
+        endVstartV = self.startV * self.endV
+        print endVstartV
+        if endVstartV <= 0:
+            crossingZero = True
+        else:
+            crossingZero = False
+            crossingAnswer = QMessageBox.question(self, "Scan not Crossing Zero Voltage", "The specified voltage scanning range does not cross zero, are you sure the range is ok?", QMessageBox.Yes | QMessageBox.Abort, QMessageBox.Yes)
+            if crossingAnswer == QMessageBox.Yes:
+                crossingZero = True
+        
+        print crossingZero
+        print self.unsavedData
+        
+        #unsavedData can also have value no_data
+        if crossingZero and not self.unsavedData == True:
             if TEST_MODE:
                 testFile = "test/good-1-1-reverse.txt"
                 #testFile = "test/bad-1-1-forward.txt"
@@ -219,7 +230,7 @@ class MainWindow ( QMainWindow ):
             
             self.calcEfficiencyAndSetLCDs()
             
-            user, experiment, device, diode, cellArea, irradiance, dark = self.getDeviceIdentification()
+            user, experiment, device, diode, cellArea, irradiance = self.getDeviceIdentification()
             if self.reverse: 
                 self.reverseText = "reverse"
             else:
@@ -230,7 +241,7 @@ class MainWindow ( QMainWindow ):
             
             self.save('last_measurement.txt', user, experiment, device, diode, cellArea, irradiance)
             
-            if dark:
+            if irradiance:
                 self.printVoc = 0
             else:
                 self.printVoc = 1
@@ -288,7 +299,7 @@ class MainWindow ( QMainWindow ):
             self.isTriggerOpen = True
             conf = genfromtxt(str(fileName), skip_header=1, dtype='str')
             extendedConf=1
-            self.showImage=1 #0
+            self.showImage=1
             self.terminateCurrentImage=1
             for i in range(len(conf)):
                 self.applyConf(conf[i], extendedConf)
@@ -375,7 +386,7 @@ class MainWindow ( QMainWindow ):
 
     def displayDiode(self):
         QApplication.processEvents()
-        user, experiment, device, diode, cellArea, irradiance, dark = self.getDeviceIdentification()
+        user, experiment, device, diode, cellArea, irradiance = self.getDeviceIdentification()
         
         self.smu.reset()
         self.smu.removetext()
@@ -398,7 +409,7 @@ class MainWindow ( QMainWindow ):
     @pyqtSlot()
     def clickSaveAs(self):
         self.calcEfficiencyAndSetLCDs()
-        user, experiment, device, diode, cellArea, irradiance, dark = self.getDeviceIdentification()
+        user, experiment, device, diode, cellArea, irradiance = self.getDeviceIdentification()
         
         suggestedFileName = self.makeAutoName(experiment, device, diode, irradiance) + ".txt"
 
@@ -424,7 +435,7 @@ class MainWindow ( QMainWindow ):
             QMessageBox.warning(self, "No data", "There is still no data to save.", QMessageBox.Ok, QMessageBox.Ok)
         else:
             self.calcEfficiencyAndSetLCDs()
-            user, experiment, device, diode, cellArea, irradiance, dark = self.getDeviceIdentification()
+            user, experiment, device, diode, cellArea, irradiance = self.getDeviceIdentification()
             directory = os.path.join(user, str(self.date))
             if not os.path.exists(directory):
                 os.makedirs(directory)
@@ -478,13 +489,6 @@ class MainWindow ( QMainWindow ):
         else:
             self.ui.preDelayTime_edit.setEnabled(False)
 
-    @pyqtSlot()
-    def clickDark(self): 
-        if self.ui.dark_check.isChecked():
-            self.ui.irradiance_edit.setEnabled(False)
-        else:
-            self.ui.irradiance_edit.setEnabled(True)
-
     def checkFileName(self, fileName):
         # https://stackoverflow.com/questions/9532499/check-whether-a-path-is-valid-in-python-without-creating-a-file-at-the-paths-ta
         if not os.access(fileName, os.W_OK):
@@ -508,7 +512,7 @@ class MainWindow ( QMainWindow ):
                 savetxt(f_handle, self.data3, fmt='%g \t%g')
 
     def makeImage(self, saveImage, directory):
-        user, experiment, device, diode, cellArea, irradiance, dark = self.getDeviceIdentification()
+        user, experiment, device, diode, cellArea, irradiance = self.getDeviceIdentification()
         imageName = self.makeAutoName(experiment, device, diode, irradiance)
         if self.currentImagePid:
             if self.terminateCurrentImage:
@@ -540,10 +544,9 @@ class MainWindow ( QMainWindow ):
             diode = str(int(self.ui.diode_spin.value()))
             cellArea = str(self.ui.cellArea_edit.text())
             irradiance = str(self.ui.irradiance_edit.text())
-            dark = self.ui.dark_check.isChecked()
         except:
             QMessageBox.warning(self, "Error reading parameters", "Please check the user, experiment, device, diode, cellArea and irradiance data fields", QMessageBox.Ok, QMessageBox.Ok)
-        return user, experiment, device, diode, cellArea, irradiance, dark
+        return user, experiment, device, diode, cellArea, irradiance
 
     def getDarkData(self, irradiance, cellArea, compliance):
         if float(irradiance):
@@ -565,9 +568,7 @@ class MainWindow ( QMainWindow ):
 
     def calcEfficiencyAndSetLCDs(self):
         self.irradiance = float(self.ui.irradiance_edit.text())
-        user, experiment, device, diode, cellArea, irradiance, dark = self.getDeviceIdentification()
-        if dark:
-            self.irradiance = 0
+        user, experiment, device, diode, cellArea, irradiance = self.getDeviceIdentification()
         if self.irradiance:
             self.efficiency = "%.3f" % float("%.4g" % (100 * ((float(self.maxPower) / float(cellArea) ) / (float(self.irradiance) * IRRADIANCE_UNIT_MULTIPLIER))))
         else:
