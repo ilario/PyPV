@@ -1,9 +1,11 @@
 PyPV
 ====
 
-Python graphical user interface for measuring current versus voltage curves using a Keithley2400 multimeter. 
+Multiplatform Python graphical user interface for measuring current versus voltage curves using a Keithley2400 multimeter. 
 
 Designed for evaluating performances of photovoltaic devices in research institutions.
+
+image::screenshot.png[PyPV screenshot]
 
 Test Mode
 ---------
