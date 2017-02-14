@@ -92,12 +92,12 @@ class MainWindow ( QMainWindow ):
         self.connect(self.ui.runListButton, SIGNAL('clicked()'), SLOT('clickRunList()'))
         self.connect(self.ui.runAutoMeasureButton, SIGNAL('clicked()'), SLOT('clickAutoMeasure()'))
         self.connect(self.ui.autoScale_check, SIGNAL('clicked()'), SLOT('clickAutoScale()'))
-        self.connect(self.ui.solSim_check, SIGNAL('clicked()'), SLOT('clickSolSim()'))
         self.isTriggerOpen = False
         if not TEST_MODE:
             self.smu = Keithley2400.K2400()
             self.smu.text("Welcome to PyPV")
             self.smu.subtext("")
+            self.smu.shutterClose()
             sleep(2)
             self.smu.setlocal()
         self.currentUnitMultiplier = 1000
@@ -138,6 +138,8 @@ class MainWindow ( QMainWindow ):
             self.ui.diode_spin.setValue(int(conf[13]))
             self.ui.reverse_check.setCheckState(int(conf[14]))
             self.ui.autoSaveImages_check.setCheckState(int(conf[15]))
+            self.ui.preDelayOff_edit.setText(int(conf[16]))
+            self.ui.preDelayOn_edit.setText(int(conf[17]))
 
     def __del__ ( self ):
         print("Saving conf...")
@@ -174,6 +176,8 @@ class MainWindow ( QMainWindow ):
             self.integrationTime = float(self.ui.integrationTime_edit.text())
             self.delayTime = float(self.ui.delayTime_edit.text())
             self.cellArea = float(self.ui.cellArea_edit.text())
+            self.preDelayOff = float(self.ui.preDelayOff_edit.text())
+            self.preDelayOn = float(self.ui.preDelayOn_edit.text())
         except:
             print "Values must be valid numbers"
 
@@ -183,7 +187,6 @@ class MainWindow ( QMainWindow ):
                 self.unsavedData = False
         
         endVstartV = self.startV * self.endV
-        print endVstartV
         if endVstartV <= 0:
             crossingZero = True
         else:
@@ -191,9 +194,6 @@ class MainWindow ( QMainWindow ):
             crossingAnswer = QMessageBox.question(self, "Scan not Crossing Zero Voltage", "The specified voltage scanning range does not cross zero, are you sure the range is ok?", QMessageBox.Yes | QMessageBox.Abort, QMessageBox.Yes)
             if crossingAnswer == QMessageBox.Yes:
                 crossingZero = True
-        
-        print crossingZero
-        print self.unsavedData
         
         #unsavedData can also have value no_data
         if crossingZero and not self.unsavedData == True:
@@ -205,6 +205,18 @@ class MainWindow ( QMainWindow ):
                 self.current = self.current / self.currentUnitMultiplier
             if not TEST_MODE:
                 self.smu.reset()
+                if self.preDelayOff:
+                    subtext="Pre Delay Off %s s" % str(self.preDelayOff)
+                    print subtext
+                    self.smu.subtext(subtext)
+                    sleep(self.preDelayOff)
+
+                self.smu.shutterOpen()
+                if self.preDelayOn:
+                    subtext="Pre Delay On %s s" % str(self.preDelayOn)
+                    print subtext
+                    self.smu.subtext(subtext)
+                    sleep(self.preDelayOn)
                 self.smu.removetext()
                 self.smu.removesubtext()
                 
@@ -212,6 +224,7 @@ class MainWindow ( QMainWindow ):
                     data = self.smu.measureIV(self.endV, self.startV, - self.stepV, self.compliance, self.scale, self.integrationTime, self.delayTime)
                 else:
                     data = self.smu.measureIV(self.startV, self.endV, self.stepV, self.compliance, self.scale, self.integrationTime, self.delayTime)
+                self.smu.shutterClose()
                 self.voltage, self.current = array(data['voltage']), array(data['current'])
             
             data2 = self.voltage, self.current * self.currentUnitMultiplier
@@ -264,7 +277,9 @@ class MainWindow ( QMainWindow ):
         except:
             print "Please insert cell surface area value"
         QMessageBox.information(self, "This is not static measurement", "This measurement doesn't wait for the Jsc to stabilize, maybe is better to measure this directly with the Keithley.")
+        self.smu.shutterOpen()
         measurements = self.smu.measureCurrent(NUM_CURRENT_POINTS+20, 0.1, 0, 5)
+        self.smu.shutterClose()
         self.ui.LCD_Jsc.display(abs(mean(measurements["current"][-NUM_CURRENT_POINTS:])*self.currentUnitMultiplier)/cellArea)
         print(mean(measurements["current"][-NUM_CURRENT_POINTS:]))
         QApplication.processEvents()
@@ -283,8 +298,10 @@ class MainWindow ( QMainWindow ):
         self.smu.reset()
         self.smu.removetext()
         self.smu.removesubtext()
+        self.smu.shutterOpen()
         measurements = self.smu.measureVoltage(5, 10.0, 0, 5)
         voltage = average(measurements["voltage"])
+        self.smu.shutterClose()
         return voltage
 
     @pyqtSlot()
@@ -363,6 +380,7 @@ class MainWindow ( QMainWindow ):
             self.ui.diode_spin.setValue(int(i)+1)
             self.displayDiode()
             voltage = self.measure_V()
+            self.smu.shutterClose()
             if voltage < float(self.ui.startV_edit.text()):
                 lowVocAnswer = QMessageBox.warning(self, "Voc lower than starting V", "The measured Voc is lower than the starting scan voltage. Check the cable connections or the lower voltage parameter. Do you want to perform anyway this measurement?", QMessageBox.Yes | QMessageBox.Cancel, QMessageBox.Cancel)
                 if lowVocAnswer == QMessageBox.Cancel:
@@ -481,13 +499,6 @@ class MainWindow ( QMainWindow ):
             self.ui.scale_combo.setEnabled(False)
         else:
             self.ui.scale_combo.setEnabled(True)
-
-    @pyqtSlot()
-    def clickSolSim(self): 
-        if self.ui.solSim_check.isChecked():
-            self.ui.preDelayTime_edit.setEnabled(True)
-        else:
-            self.ui.preDelayTime_edit.setEnabled(False)
 
     def checkFileName(self, fileName):
         # https://stackoverflow.com/questions/9532499/check-whether-a-path-is-valid-in-python-without-creating-a-file-at-the-paths-ta
@@ -613,4 +624,4 @@ class MainWindow ( QMainWindow ):
 
     def makeHeader(self, user, experiment, device, diode, cellArea, irradiance):
         darkOutput = self.getDarkData(irradiance, cellArea, float(self.compliance))
-        return "PyPV software (Gr. E. Palomares, ICIQ) - Voltage-Current measurement Report", "User:	" + user, "Date:	" + str(self.date) + "    Time: " + str(datetime.datetime.now().strftime("%H:%M:%S")), "Experiment:	" + experiment, "Device:	" + device, "Diode:	" + diode, "Forward or reverse? " + self.reverseText, "Lowest Voltage (V):	" + str(self.minVoltage), "Highest Voltage (V): " + str(self.maxVoltage), "Voltage Step (V):	" + str(self.stepV), "Compliance (A):	" + str(self.compliance), "Scale (A):	" + str(self.scale), "Voltage of maximum power point (V):	" + str(self.voltageMaxPower) + "	Current density of MPP (mA/cm2):	" + str(self.currentMaxPowerDensity), "Integration Time:	" + str(self.integrationTime), "Delay Time (s):	" + str(self.delayTime), darkOutput, "Cell Area (cm2):	" + cellArea, "Irradiance (mW/cm2):	" + irradiance, "Jsc (mA/cm2):	" + str(self.jscDensity), "Voc (V):	" + str(self.voc), "Fill factor:	" + str(self.ff), "Efficiency (%):	" + str(self.efficiency), "Voltage_V \tCurrent_mA"
+        return "PyPV software (Gr. E. Palomares, ICIQ) - Voltage-Current measurement Report", "User:	" + user, "Date:	" + str(self.date) + "    Time: " + str(datetime.datetime.now().strftime("%H:%M:%S")), "Experiment:	" + experiment, "Device:	" + device, "Diode:	" + diode, "Forward or reverse? " + self.reverseText, "Lowest Voltage (V):	" + str(self.minVoltage), "Highest Voltage (V): " + str(self.maxVoltage), "Voltage Step (V):	" + str(self.stepV), "Compliance (A):	" + str(self.compliance), "Scale (A):	" + str(self.scale), "Voltage of maximum power point (V):	" + str(self.voltageMaxPower) + "	Current density of MPP (mA/cm2):	" + str(self.currentMaxPowerDensity), "Integration Time:	" + str(self.integrationTime), "Delay Time (s):	" + str(self.delayTime) + "	PreDelayOff (s):	" + str(self.preDelayOff) + "	PreDelayOn (s):	" + str(self.preDelayOn), darkOutput, "Cell Area (cm2):	" + cellArea, "Irradiance (mW/cm2):	" + irradiance, "Jsc (mA/cm2):	" + str(self.jscDensity), "Voc (V):	" + str(self.voc), "Fill factor:	" + str(self.ff), "Efficiency (%):	" + str(self.efficiency), "Voltage_V \tCurrent_mA"

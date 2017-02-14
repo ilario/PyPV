@@ -1805,7 +1805,7 @@
     <property name="geometry">
      <rect>
       <x>430</x>
-      <y>300</y>
+      <y>290</y>
       <width>31</width>
       <height>21</height>
      </rect>
@@ -1819,22 +1819,19 @@
      <rect>
       <x>270</x>
       <y>290</y>
-      <width>81</width>
+      <width>61</width>
       <height>21</height>
      </rect>
     </property>
     <property name="text">
-     <string>Pre Delay Time</string>
+     <string>Pre Delay</string>
     </property>
    </widget>
-   <widget class="QLineEdit" name="preDelayTime_edit">
-    <property name="enabled">
-     <bool>false</bool>
-    </property>
+   <widget class="QLineEdit" name="preDelayOff_edit">
     <property name="geometry">
      <rect>
       <x>360</x>
-      <y>290</y>
+      <y>280</y>
       <width>61</width>
       <height>27</height>
      </rect>
@@ -1843,17 +1840,56 @@
      <string>0</string>
     </property>
    </widget>
-   <widget class="QCheckBox" name="solSim_check">
+   <widget class="QLineEdit" name="preDelayOn_edit">
     <property name="geometry">
      <rect>
-      <x>270</x>
+      <x>360</x>
+      <y>310</y>
+      <width>61</width>
+      <height>27</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>0</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_34">
+    <property name="geometry">
+     <rect>
+      <x>430</x>
       <y>320</y>
-      <width>131</width>
+      <width>31</width>
       <height>21</height>
      </rect>
     </property>
     <property name="text">
-     <string>Control Solar Simulator</string>
+     <string>s</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_33">
+    <property name="geometry">
+     <rect>
+      <x>330</x>
+      <y>280</y>
+      <width>31</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Off</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_37">
+    <property name="geometry">
+     <rect>
+      <x>330</x>
+      <y>310</y>
+      <width>31</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>On</string>
     </property>
    </widget>
    <zorder>label_6</zorder>
@@ -1911,14 +1947,16 @@
    <zorder>diode_spin</zorder>
    <zorder>user_edit</zorder>
    <zorder>scale_combo</zorder>
-   <zorder>dark_check</zorder>
    <zorder>autoSaveImages_check</zorder>
    <zorder>runListButton</zorder>
    <zorder>runAutoMeasureButton</zorder>
    <zorder>label_31</zorder>
    <zorder>label_32</zorder>
-   <zorder>preDelayTime_edit</zorder>
-   <zorder>solSim_check</zorder>
+   <zorder>preDelayOff_edit</zorder>
+   <zorder>preDelayOn_edit</zorder>
+   <zorder>label_34</zorder>
+   <zorder>label_33</zorder>
+   <zorder>label_37</zorder>
   </widget>
  </widget>
  <tabstops>

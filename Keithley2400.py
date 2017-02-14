@@ -1,7 +1,7 @@
 # Keithley 2400 Python library
 #
 # Copyright (C) 2015 Daniel Fernandez Pinto
-#               2015-2016 Ilario Gelmetti <iochesonome@gmail.com>
+#               2015-2017 Ilario Gelmetti <iochesonome@gmail.com>
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -59,7 +59,6 @@ class K2400():
         return {'voltage':voltage, 'current':current} 
 
     def measureCurrent( self, numberOfPoints, compliance, setVoltage, integrationTime):    
-        self.ctrl.write("*RST")
         self.ctrl.write(":SOUR:VOLT %lf" % setVoltage)
         self.ctrl.write(":SENS:FUNC 'CURR'")
         self.ctrl.write(":SENS:CURR:NPLC %lf" % integrationTime)
@@ -79,7 +78,6 @@ class K2400():
         
 
     def measureVoltage( self, numberOfPoints, compliance, setCurrent, integrationTime):
-        self.ctrl.write("*RST")
         self.ctrl.write(":SOUR:FUNC CURR")
         self.ctrl.write(":SOUR:CURR:MODE FIXED")
         self.ctrl.write(":SENS:FUNC 'VOLT'")
@@ -101,8 +99,6 @@ class K2400():
         return data
 
     def measureIV( self, startVoltage, endVoltage, step, compliance, scaleValue, integrationTime, delayTime):
-
-        self.ctrl.write("*RST")
         self.ctrl.write(":SENS:FUNC \"CURR\"")
         self.ctrl.write(":SENS:CURR:PROT %lf" % compliance)
         if scaleValue:
