@@ -18,9 +18,8 @@
 
 
 TEST_MODE = 0
-
-print("Checking if Keithley is connected...")
-
+if not TEST_MODE:
+    import Keithley2400
 from PyQt4 import uic
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
@@ -32,8 +31,6 @@ import datetime
 from multiprocessing import Process
 import os
 import unicodedata
-if not TEST_MODE:
-    import Keithley2400
 
 ( Ui_MainWindow, QMainWindow ) = uic.loadUiType( 'mainwindow.ui' )
 
@@ -80,6 +77,9 @@ class MainWindow ( QMainWindow ):
     """MainWindow inherits QMainWindow"""
 
     def __init__ ( self, parent = None ):
+        if not TEST_MODE:
+            print("Checking if Keithley is connected...")
+
         QMainWindow.__init__( self, parent )
         self.ui = Ui_MainWindow()
         self.ui.setupUi( self )
@@ -203,7 +203,7 @@ class MainWindow ( QMainWindow ):
                 #testFile = "test/ugly-1-1-forward.txt"
                 self.voltage, self.current = loadtxt(testFile,skiprows=25,unpack=True)
                 self.current = self.current / self.currentUnitMultiplier
-            if not TEST_MODE:
+            else:
                 self.smu.reset()
                 if self.preDelayOff:
                     subtext="Pre Delay Off %s s" % str(self.preDelayOff)

@@ -44,7 +44,6 @@ class K2400():
                 query = self.ctrl.query(":STAT:OPER:COND?") 
                 if query != notPassed:
                     measurementDone = True
-                    print "passed measurement"
             except:
                 sleep(0.1)
                 measurementDone = False
