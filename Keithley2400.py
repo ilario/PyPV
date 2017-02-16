@@ -150,3 +150,9 @@ class K2400():
         
     def setlocal(self):
         self.ctrl.write(":SYST:LOC")
+
+    def shutterClose(self):
+        self.ctrl.write(":SOURCE2:TTL 15")
+
+    def shutterOpen(self):
+        self.ctrl.write(":SOURCE2:TTL 14")
