@@ -17,14 +17,16 @@
 
 from numpy import *
 
-def extractdata( voltage, current ):
-    maxPower, voltageMaxPower, currentMaxPower= calcPower( voltage, current )
-    jsc = calcJsc( voltage, current )
-    voc = calcVoc( voltage, current )
+
+def extractdata(voltage, current):
+    maxPower, voltageMaxPower, currentMaxPower = calcPower(voltage, current)
+    jsc = calcJsc(voltage, current)
+    voc = calcVoc(voltage, current)
     ff = maxPower / (jsc * voc)
     return maxPower, jsc, voc, ff, voltageMaxPower, currentMaxPower
-    
-def calcPower( voltage, current ):
+
+
+def calcPower(voltage, current):
     power = voltage * current
     maxPower = power.max()
     indexMaxPower = power.argmax()
@@ -32,57 +34,62 @@ def calcPower( voltage, current ):
     currentMaxPower = current[indexMaxPower]
     return maxPower, voltageMaxPower, currentMaxPower
 
-def calcJsc( voltage, current ):
+
+def calcJsc(voltage, current):
     posJsc = abs(voltage).argmin()
     length = len(voltage)
-    rangeJscStart, rangeJscStop = max(posJsc-3,0), min(posJsc+3,length)
+    rangeJscStart, rangeJscStop = max(posJsc - 3, 0), min(posJsc + 3, length)
     voltageJsc = voltage[rangeJscStart:rangeJscStop]
     currentJsc = current[rangeJscStart:rangeJscStop]
     fitJsc = polyfit(voltageJsc, currentJsc, 2)
     jsc = fitJsc[2]
     return jsc
 
-def calcVoc( voltage, current ):
+
+def calcVoc(voltage, current):
     posVoc = abs(current).argmin()
     length = len(voltage)
-    rangeVocStart, rangeVocStop = max((posVoc-3),0), min(posVoc+3,length)
+    rangeVocStart, rangeVocStop = max((posVoc - 3), 0), min(posVoc + 3, length)
     voltageVoc = voltage[rangeVocStart:rangeVocStop]
     currentVoc = current[rangeVocStart:rangeVocStop]
     fitVoc = polyfit(currentVoc, voltageVoc, 2)
     voc = fitVoc[2]
     return voc
-    
-def calcSeriesResistance( voltage, current, compliance ):
+
+
+def calcSeriesResistance(voltage, current, compliance, reverse):
     seriesResistance = "NotFound"
-    while len(voltage) > 6: 
-        print("voltage")
-        print(len(voltage))  
+    if reverse:
+        current = current[::-1]
+        voltage = voltage[::-1]
+
+    while len(voltage) > 6:
         length = len(voltage)
-        if current[length-6] > 0:
+        if current[length - 6] > 0:
             break
-        if (current[length-5] > current[length-4]) & (current[length-4] > current[length-3]) & (current[length-3] > current[length-2]) & (current[length-2] > current[length-1]) & (current[length-1] > -compliance):
+        if (
+                (current[length - 5] > current[length - 4]) &
+                (current[length - 4] > current[length - 3]) &
+                (current[length - 3] > current[length - 2]) &
+                (current[length - 2] > current[length - 1]) &
+                (current[length - 1] > - compliance)):
             voltageSR = voltage[length-5:length]
-            print(voltageSR)
             currentSR = current[length-5:length]
-            print(currentSR)
             fitSR = polyfit(voltageSR, currentSR, 1)
-            print(fitSR[0])
-            seriesResistance = -1/fitSR[0]
-            print seriesResistance
+            seriesResistance = - 1 / fitSR[0]
             break
         else:
-            current = current[0:length-2]
-            voltage = voltage[0:length-2]
+            current = current[0:length - 2]
+            voltage = voltage[0:length - 2]
     return seriesResistance
-    
-def calcParallelResistance( voltage, current ):
+
+
+def calcParallelResistance(voltage, current):
     posJsc = abs(voltage).argmin()
     length = len(voltage)
-    rangePRStart, rangePRStop = max(posJsc-5,0), min(posJsc+6,length)
+    rangePRStart, rangePRStop = max(posJsc - 5, 0), min(posJsc + 6, length)
     voltagePR = voltage[rangePRStart:rangePRStop]
     currentPR = current[rangePRStart:rangePRStop]
     fitPR = polyfit(voltagePR, currentPR, 1)
-    parallelResistance = -1/fitPR[0]
-    print(parallelResistance)
+    parallelResistance = - 1 / fitPR[0]
     return parallelResistance
-    

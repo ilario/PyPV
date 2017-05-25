@@ -1,7 +1,7 @@
 # PyPV
 #
 # Copyright (C) 2015 Daniel Fernandez Pinto
-#               2015-2016 Ilario Gelmetti <iochesonome@gmail.com>
+#               2015-2017 Ilario Gelmetti <iochesonome@gmail.com>
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -32,7 +32,7 @@ if __name__ == '__main__':
 
     # create widget
     w = MainWindow()
-    w.setWindowTitle('PyPV')
+    w.setWindowTitle('PyPV - https://github.com/ilario/pypv')
     w.show()
 
     # connection

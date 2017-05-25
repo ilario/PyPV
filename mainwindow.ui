@@ -1575,7 +1575,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>0</string>
+     <string>0.001</string>
     </property>
    </widget>
    <widget class="QLabel" name="label_24">
@@ -1892,6 +1892,19 @@
      <string>On</string>
     </property>
    </widget>
+   <widget class="QLabel" name="scanSpeed_label">
+    <property name="geometry">
+     <rect>
+      <x>440</x>
+      <y>210</y>
+      <width>91</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>NAN V/s</string>
+    </property>
+   </widget>
    <zorder>label_6</zorder>
    <zorder>label_8</zorder>
    <zorder>label_2</zorder>
@@ -1957,6 +1970,7 @@
    <zorder>label_34</zorder>
    <zorder>label_33</zorder>
    <zorder>label_37</zorder>
+   <zorder>scanSpeed_label</zorder>
   </widget>
  </widget>
  <tabstops>

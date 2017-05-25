@@ -17,14 +17,16 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # -*- coding: utf-8 -*-
+
 from visa import *
 from time import sleep
 
+
 class K2400():
     """ Keithley 2400 instrument class. """
-    def __init__( self, address=24 ):
+    def __init__(self, address=24):
         rm = ResourceManager()
-        instrumentName =str("GPIB::{0}::INSTR").format(address)
+        instrumentName = str("GPIB::{0}::INSTR").format(address)
         self.ctrl = rm.open_resource(instrumentName)
         print(self.ctrl.query("*IDN?"))
 
@@ -36,12 +38,12 @@ class K2400():
         """ closes the VISA instance (I think) """
         self.ctrl.close()
 
-    def waitForMeasurementDone( self ):
+    def waitForMeasurementDone(self):
         measurementDone = False
         notPassed = self.ctrl.query(":STAT:OPER:COND?")
-        while measurementDone == False:
+        while not measurementDone:
             try:
-                query = self.ctrl.query(":STAT:OPER:COND?") 
+                query = self.ctrl.query(":STAT:OPER:COND?")
                 if query != notPassed:
                     measurementDone = True
             except:
@@ -55,9 +57,10 @@ class K2400():
         for i in range(0, len(inputData)/5):
             voltage.append(inputData[i*5])
             current.append(inputData[i*5+1])
-        return {'voltage':voltage, 'current':current} 
+        return {'voltage': voltage, 'current': current}
 
-    def measureCurrent( self, numberOfPoints, compliance, setVoltage, integrationTime):    
+    def measureCurrent(
+            self, numberOfPoints, compliance, setVoltage, integrationTime):
         self.ctrl.write(":SOUR:VOLT %lf" % setVoltage)
         self.ctrl.write(":SENS:FUNC 'CURR'")
         self.ctrl.write(":SENS:CURR:NPLC %lf" % integrationTime)
@@ -74,9 +77,9 @@ class K2400():
         self.ctrl.write("*RST")
         data = self.splitData(data)
         return data
-        
 
-    def measureVoltage( self, numberOfPoints, compliance, setCurrent, integrationTime):
+    def measureVoltage(
+            self, numberOfPoints, compliance, setCurrent, integrationTime):
         self.ctrl.write(":SOUR:FUNC CURR")
         self.ctrl.write(":SOUR:CURR:MODE FIXED")
         self.ctrl.write(":SENS:FUNC 'VOLT'")
@@ -97,7 +100,9 @@ class K2400():
         data = self.splitData(data)
         return data
 
-    def measureIV( self, startVoltage, endVoltage, step, compliance, scaleValue, integrationTime, delayTime):
+    def measureIV(
+            self, startVoltage, endVoltage, step, compliance, scaleValue,
+            integrationTime, delayTime):
         self.ctrl.write(":SENS:FUNC \"CURR\"")
         self.ctrl.write(":SENS:CURR:PROT %lf" % compliance)
         if scaleValue:
@@ -111,42 +116,44 @@ class K2400():
         self.ctrl.write(":SOUR:VOLT:MODE SWE")
         self.ctrl.write(":SENS:VOLT:NPLC %lf" % integrationTime)
         self.ctrl.write(":TRAC:FEED SENS")
-        self.ctrl.write(":TRAC:POIN %d" % (int(abs((startVoltage-endVoltage)/step)+1)))
+        self.ctrl.write(":TRAC:POIN %d" % (
+                int(abs((startVoltage-endVoltage)/step)+1)))
         self.ctrl.write(":TRAC:FEED:CONT NEXT")
-        self.ctrl.write(":TRIG:COUN %d" % (int(abs((startVoltage-endVoltage)/step)+1)))
+        self.ctrl.write(":TRIG:COUN %d" % (
+                int(abs((startVoltage-endVoltage)/step)+1)))
         self.ctrl.write(":SOUR:DEL %lf" % delayTime)
         self.ctrl.write(":OUTP ON")
         self.ctrl.write(":INIT")
-        
+
         self.waitForMeasurementDone()
-        
+
         data = self.ctrl.query_ascii_values(":TRACE:DATA?")
         self.ctrl.write(":OUTP OFF")
         self.ctrl.write("*RST")
         data = self.splitData(data)
         self.beep()
         return data
-            
+
     def beep(self):
         self.ctrl.write(":SYST:BEEP 2000, 0.1")
-        
+
     def beep2(self):
         self.ctrl.write(":SYST:BEEP 1800, 0.2")
 
     def text(self, text):
         self.ctrl.write(":DISP:WIND:TEXT:DATA \'%s\'" % str(text))
         self.ctrl.write(":DISP:WIND:TEXT:STAT ON")
-        
+
     def subtext(self, text):
         self.ctrl.write(":DISP:WIND2:TEXT:DATA \'%s\'" % str(text))
         self.ctrl.write(":DISP:WIND2:TEXT:STAT ON")
-        
+
     def removetext(self):
         self.ctrl.write(":DISP:WIND:TEXT:STAT OFF")
-        
+
     def removesubtext(self):
-        self.ctrl.write(":DISP:WIND2:TEXT:STAT OFF")   
-        
+        self.ctrl.write(":DISP:WIND2:TEXT:STAT OFF")
+
     def setlocal(self):
         self.ctrl.write(":SYST:LOC")
 
@@ -155,3 +162,7 @@ class K2400():
 
     def shutterOpen(self):
         self.ctrl.write(":SOURCE2:TTL 14")
+
+    def scanSpeed(self, stepV, integrationTime, delayTime):
+        scanSpeed = stepV / (0.003 + delayTime + integrationTime * 0.06)
+        return scanSpeed
