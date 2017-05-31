@@ -5,7 +5,7 @@ Multiplatform Python graphical user interface for measuring current versus volta
 
 Designed for evaluating performances of photovoltaic devices in research institutions.
 
-image::screenshot.png[PyPV screenshot]
+image::screenshot-20170526.png[PyPV screenshot]
 
 Test Mode
 ---------
