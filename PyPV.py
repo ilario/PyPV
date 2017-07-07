@@ -1,3 +1,6 @@
+#!/usr/bin/env python2
+# -*- coding: utf-8 -*-
+#
 # PyPV
 #
 # Copyright (C) 2015 Daniel Fernandez Pinto
