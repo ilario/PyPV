@@ -141,11 +141,11 @@ class K2400():
         self.ctrl.write(":SYST:BEEP 1800, 0.2")
 
     def text(self, text):
-        self.ctrl.write(":DISP:WIND:TEXT:DATA \'%s\'" % str(text))
+        self.ctrl.write(":DISP:WIND:TEXT:DATA \'%s\'" % str(text)[:20])
         self.ctrl.write(":DISP:WIND:TEXT:STAT ON")
 
     def subtext(self, text):
-        self.ctrl.write(":DISP:WIND2:TEXT:DATA \'%s\'" % str(text))
+        self.ctrl.write(":DISP:WIND2:TEXT:DATA \'%s\'" % str(text)[:32])
         self.ctrl.write(":DISP:WIND2:TEXT:STAT ON")
 
     def removetext(self):
