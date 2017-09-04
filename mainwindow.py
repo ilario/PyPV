@@ -107,9 +107,6 @@ class MainWindow (QMainWindow):
                 self.ui.runButton, SIGNAL('clicked()'),
                 SLOT('clickMeasure_IV()'))
         self.connect(
-                self.ui.jscButton, SIGNAL('clicked()'),
-                SLOT('clickMeasure_I()'))
-        self.connect(
                 self.ui.vocButton, SIGNAL('clicked()'),
                 SLOT('clickMeasure_V()'))
         self.connect(
@@ -357,32 +354,6 @@ class MainWindow (QMainWindow):
             if self.showImage:
                 saveImage = 0
                 self.makeImage(saveImage, "")
-
-    @pyqtSlot()
-    def clickMeasure_I(self):
-        self.smu.reset()
-        self.smu.removetext()
-        self.smu.removesubtext()
-        self.ui.LCD_Jsc.setDigitCount(5)
-        try:
-            cellArea = float(self.ui.cellArea_edit.text())
-        except:
-            print "Please insert cell surface area value"
-        QMessageBox.information(
-                self, "This is not static measurement",
-                "This measurement doesn't wait for the Jsc to stabilize, "
-                "maybe is better to measure this directly with the Keithley.")
-        self.smu.shutterOpen()
-        measurements = self.smu.measureCurrent(
-                NUM_CURRENT_POINTS + 20, 0.1, 0, 5)
-        self.smu.shutterClose()
-        self.ui.LCD_Jsc.display(
-                abs(
-                        mean(measurements["current"][-NUM_CURRENT_POINTS:]) *
-                        self.currentUnitMultiplier) /
-                cellArea)
-        print(mean(measurements["current"][-NUM_CURRENT_POINTS:]))
-        QApplication.processEvents()
 
     @pyqtSlot()
     def clickMeasure_V(self):
