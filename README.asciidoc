@@ -7,6 +7,28 @@ Designed for evaluating performances of photovoltaic devices in research institu
 
 image::screenshot-20170526.png[PyPV screenshot]
 
+Installation
+------------
+
+Linux
+~~~~~
+
+Install Python 2.7 from your distro's package manager, likely the package will be named `python2`.
+Install PyVisa `python2-pyvisa`, PyVisa-py `python2-pyvisa-py` or NationalInstruments-vISA (hard to install), PyQt4 `python2-pyqt4`, MatPlotLib `python2-matplotlib`, NumPy `python2-numpy`, Linux-GPIB `python2-linux-gpib` and `linux-gpib`.
+
+Run with:
+```
+python2 PyPV.py
+```
+
+
+Windows
+~~~~~~~
+
+Install Python 2.7 (compatible also with Windows XP) from link:https://www.python.org/downloads/windows/[here], PyQt4 for Python 2.7 from link:https://sourceforge.net/projects/pyqt/files/PyQt4/PyQt-4.11.4/[here], MatPlotLib as explained link:https://matplotlib.org/users/installing.html[here], PyVISA as explained link:https://pyvisa.readthedocs.io/en/master/getting.html[here], NationalInstruments-VISA from link:https://www.ni.com/visa/[here].
+
+Run with double click on `PyPV.py` file.
+
 Test Mode
 ---------
 
