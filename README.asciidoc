@@ -25,7 +25,7 @@ python2 PyPV.py
 Windows
 ~~~~~~~
 
-Install Python 2.7 (compatible also with Windows XP) from link:https://www.python.org/downloads/windows/[here], PyQt4 for Python 2.7 from link:https://sourceforge.net/projects/pyqt/files/PyQt4/PyQt-4.11.4/[here], MatPlotLib as explained link:https://matplotlib.org/users/installing.html[here], PyVISA as explained link:https://pyvisa.readthedocs.io/en/master/getting.html[here], NationalInstruments-VISA from link:https://www.ni.com/visa/[here].
+Install Python 2.7 (compatible also with Windows XP) from link:https://www.python.org/downloads/windows/[here] (do not use Python 3 as it is not supported by PyPV), PyQt4 for Python 2.7 from link:https://sourceforge.net/projects/pyqt/files/PyQt4/PyQt-4.11.4/[here] (4.11.4 is the latest version for which the installer is available), MatPlotLib as explained link:https://matplotlib.org/users/installing.html[here], PyVISA as explained link:https://pyvisa.readthedocs.io/en/master/getting.html[here], NationalInstruments-VISA from link:http://www.ni.com/en-gb/support/downloads/drivers/download.ni-visa.html[here].
 
 Run with double click on `PyPV.py` file.
 
