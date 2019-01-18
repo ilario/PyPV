@@ -33,6 +33,7 @@ class K2400():
     def reset(self):
         """ resets instrument """
         self.ctrl.write("*rst; status:preset; *cls")
+        self.shutterClose()
 
     def close(self):
         """ closes the VISA instance (I think) """
@@ -158,10 +159,10 @@ class K2400():
         self.ctrl.write(":SYST:LOC")
 
     def shutterClose(self):
-        self.ctrl.write(":SOURCE2:TTL 15")
+        self.ctrl.write(":SOURCE2:TTL 0")
 
     def shutterOpen(self):
-        self.ctrl.write(":SOURCE2:TTL 14")
+        self.ctrl.write(":SOURCE2:TTL 15")
 
     def scanSpeed(self, stepV, integrationTime, delayTime):
         scanSpeed = stepV / (0.003 + delayTime + integrationTime * 0.06)
