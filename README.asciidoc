@@ -3,7 +3,7 @@ PyPV
 
 Multiplatform Python 2.7 graphical user interface for measuring current versus voltage curves using a Keithley2400 multimeter. 
 
-Designed for evaluating performances of photovoltaic devices in research institutions, currently used in link:https://iciq.es[ICIQ].
+Designed for evaluating performances of photovoltaic devices in research institutions, currently used in link:https://iciq.es/[ICIQ (Institut Català d'Investigació Química)], in link:http://www.urv.cat/[URV (Universitat Rovira i Vrigili)], and in link:http://www.ikc.edu.tr/[İzmir Katip Çelebi Üniversitesi].
 
 image::screenshot-20170526.png[PyPV screenshot]
 
@@ -30,8 +30,8 @@ Install:
 - PyQt4 for Python 2.7 from link:https://sourceforge.net/projects/pyqt/files/PyQt4/PyQt-4.11.4/PyQt4-4.11.4-gpl-Py2.7-Qt4.8.7-x64.exe/download[here for 64bit operating systems] and link:https://sourceforge.net/projects/pyqt/files/PyQt4/PyQt-4.11.4/PyQt4-4.11.4-gpl-Py2.7-Qt4.8.7-x32.exe/download[here for older 32bit operating systems], like Windows XP (4.11.4 is the latest version for which the installer is available).
 - NationalInstruments drivers (NI-488.2) Runtime from link:http://www.ni.com/es-es/support/downloads/drivers/download.ni-488-2.html[here] (login required, otherwise a direct link for download (updated 2019-01) is link:http://download.ni.com/support/softlib/gpib/Windows/18.5/NI488Runtime_1850.exe[this], in case Runtime was not enough (I'm not sure) you can download the full NI-488.2 from link:http://download.ni.com/support/softlib/gpib/Windows/18.5/NI4882_1850f1.exe[here]).
 - NationalInstruments VISA (NI-VISA) Run-Time Engine from link:http://www.ni.com/en-gb/support/downloads/drivers/download.ni-visa.html[here] (login required, otherwise a direct link for download (updated 2019-01) is link:http://download.ni.com/support/softlib/visa/NI-VISA/18.5/Windows/NIVISA1850runtime.exe[this], in case Runtime was not enough (I'm not sure), you can download the full NI-VISA from link:http://download.ni.com/support/softlib/visa/NI-VISA/18.5/Windows/NIVISA1850full.exe[here]).
-- MatPlotLib as explained link:https://matplotlib.org/users/installing.html[here] or detailed below.
-- PyVISA as explained link:https://pyvisa.readthedocs.io/en/master/getting.html[here] or detailed below.
+- MatPlotLib as explained link:https://matplotlib.org/users/installing.html[here] and detailed below.
+- PyVISA as explained link:https://pyvisa.readthedocs.io/en/master/getting.html[here] and detailed below.
 
 Make sure Keithley is on and connected via GPIB-USB to the computer (support for non-USB connections can be added, for example for connection via serial cable, but is not yet implemented in PyPV).
 
