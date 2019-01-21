@@ -1804,14 +1804,14 @@
    <widget class="QLabel" name="label_32">
     <property name="geometry">
      <rect>
-      <x>240</x>
+      <x>230</x>
       <y>260</y>
-      <width>61</width>
+      <width>71</width>
       <height>21</height>
      </rect>
     </property>
     <property name="text">
-     <string>Pre Delay</string>
+     <string>Shutter Delay</string>
     </property>
    </widget>
    <widget class="QLineEdit" name="preDelayOff_edit">
