@@ -26,7 +26,14 @@ class K2400():
     """ Keithley 2400 instrument class. """
     def __init__(self, address=24):
         rm = ResourceManager()
-        instrumentName = str("GPIB::{0}::INSTR").format(address)
+        print(rm)
+        ######## in case the resource name is known, it can be set here and the following three lines can be eliminated
+        #instrumentName = str("GPIB0::{0}::INSTR").format(address)
+        rmList = rm.list_resources()
+        print("Available resources: {}".format(rmList))
+        instrumentName = filter(lambda x: 'GPIB' in x and str(address) in x, rmList)[0]
+        ########
+        print("Using resource: {}".format(instrumentName))
         self.ctrl = rm.open_resource(instrumentName)
         print(self.ctrl.query("*IDN?"))
 
