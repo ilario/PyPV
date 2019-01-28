@@ -3,7 +3,7 @@ PyPV
 
 Multiplatform Python 2.7 graphical user interface for measuring current versus voltage curves using a Keithley2400 multimeter. 
 
-Designed for evaluating performances of photovoltaic devices in research institutions, currently used in link:https://iciq.es/[ICIQ (Institut Català d'Investigació Química)], in link:http://www.urv.cat/[URV (Universitat Rovira i Vrigili)], and in link:http://www.ikc.edu.tr/[İzmir Katip Çelebi Üniversitesi].
+Designed for evaluating performances of photovoltaic devices in research institutions, currently used in link:https://iciq.es/[ICIQ (Institut Català d'Investigació Química)], in link:http://www.urv.cat/[URV (Universitat Rovira i Vrigili)], in link:http://www.ikc.edu.tr/[İzmir Katip Çelebi Üniversitesi], and in link:http://www.kmu.edu.tr[Karamanoglu Mehmetbey University].
 
 image::screenshot-20170526.png[PyPV screenshot]
 
