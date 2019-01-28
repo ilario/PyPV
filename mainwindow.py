@@ -266,14 +266,14 @@ class MainWindow (QMainWindow):
             else:
                 self.smu.reset()
                 if self.preDelayOff:
-                    subtext = "Pre Delay Off %s s" % str(self.preDelayOff)
+                    subtext = "Shutter Delay Off %s s" % str(self.preDelayOff)
                     print subtext
                     self.smu.subtext(subtext)
                     sleep(self.preDelayOff)
 
                 self.smu.shutterOpen()
                 if self.preDelayOn:
-                    subtext = "Pre Delay On %s s" % str(self.preDelayOn)
+                    subtext = "Shutter Delay On %s s" % str(self.preDelayOn)
                     print subtext
                     self.smu.subtext(subtext)
                     sleep(self.preDelayOn)
@@ -814,8 +814,8 @@ class MainWindow (QMainWindow):
                 str(self.currentMaxPowerDensity), "Integration Time:	" +
                 str(self.integrationTime) + "	Scan Speed (V/s):	" +
                 str(self.scanSpeed), "Delay Time (s):	" +
-                str(self.delayTime) + "	PreDelayOff (s):	" +
-                str(self.preDelayOff) + "	PreDelayOn (s):	" +
+                str(self.delayTime) + "	ShutterDelayOff (s):	" +
+                str(self.preDelayOff) + "	ShutterDelayOn (s):	" +
                 str(self.preDelayOn), darkOutput, "Cell Area (cm2):	" +
                 cellArea, "Irradiance (mW/cm2):	" + irradiance,
                 "Jsc (mA/cm2):	" + str(self.jscDensity), "Voc (V):	" +
