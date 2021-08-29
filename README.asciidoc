@@ -7,7 +7,7 @@ Multiplatform Python 2.7 graphical user interface for measuring current versus v
 
 Designed for evaluating performances of photovoltaic devices in research institutions, currently used in link:https://iciq.es/[ICIQ (Institut Català d'Investigació Química)], in link:http://www.urv.cat/[URV (Universitat Rovira i Vrigili)], in link:http://www.ikc.edu.tr/[İzmir Katip Çelebi Üniversitesi], and in link:http://www.kmu.edu.tr[Karamanoglu Mehmetbey University].
 
-Complete documentation can be found on link:https://www.tdx.cat/handle/10803/668085[Ilario Gelmetti's PhD thesis] in Section 7.2.
+Complete documentation can be found on link:https://github.com/ilario/documents_in_latex-PhD_thesis/[Ilario Gelmetti's PhD thesis] in Section 7.2.
 
 image::screenshot-20170526.png[PyPV screenshot]
 
