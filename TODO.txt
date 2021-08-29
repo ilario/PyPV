@@ -13,6 +13,7 @@ WISHLIST
 * avvisare se si sta uscendo con una misura non salvata
 * interfaccia "elastica" che si adatti a pieno schermo
 * bottoni measure Voc e Jsc che diano il comando di una misura continua e che il risultato si legga dallo schermo del Keithley
+* togliere spazio prima di tabulazione nel output txt
 
 TO BE TESTED
 * misura Voc negativi
